@@ -1,6 +1,6 @@
 {
     "variables": {
-        "debian_version": "8.5.0"
+        "debian_version": "8.6.0"
     },
   "builders": [
     {
@@ -47,9 +47,17 @@
     {
       "type": "vagrant",
       "compression_level": "9",
+      "keep_input_artifact": true,
       "output": "debian-{{user `debian_version`}}-amd64_{{.Provider}}.box",
       "only": ["virtualbox-iso"]
+    },
+    {
+      "type": "virtualbox-to-hyperv",
+      "keep_input_artifact": true,
+      "output": "debian-{{user `debian_version`}}-amd64_{{.Provider}}_hyperv.box",
+      "only": ["virtualbox-iso"]
     }
+
   ],
   "provisioners": [
     {
@@ -62,6 +70,7 @@
         "scripts/sudoers.sh",
         "scripts/vagrant.sh",
         "scripts/vbaddguest.sh",
+        "scripts/hyperv.sh",
         "scripts/cleanup.sh"
       ],
       "only": ["virtualbox-iso"]
