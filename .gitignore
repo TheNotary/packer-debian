@@ -1,1 +1,4 @@
 packer_cache/
+output-virtualbox-iso/
+debian-8.6.0-amd64_virtualbox.box
+*.swp

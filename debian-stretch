@@ -1,6 +1,7 @@
 {
     "variables": {
-        "debian_version": "7.9.0"
+        "debian_version": "9.0.0",
+				"iso_checksum": "08a25863ae2369de462e55b539050dab0adb03262a4aefda208e907ef9ea2fff2158a77f6a6eddb4ac7fbd2fcc9cc64edd34f70e211eceac4bb6f308fefc3f0a"
     },
   "builders": [
     {
@@ -8,7 +9,7 @@
       "boot_command": [
         "<esc><wait>",
         "install <wait>",
-        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed_wheezy.cfg <wait>",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed_jessie.cfg <wait>",
         "debian-installer=en_US <wait>",
         "auto <wait>",
         "locale=en_US <wait>",
@@ -27,8 +28,9 @@
       "guest_os_type": "Debian_64",
       "headless": true,
       "http_directory": "http",
-      "iso_checksum_type": "none",
-      "iso_url": "http://cdimage.debian.org/cdimage/archive/{{user `debian_version`}}/amd64/iso-cd/debian-{{user `debian_version`}}-amd64-netinst.iso",
+      "iso_checksum_type": "sha512",
+			"iso_checksum": "{{ user `iso_checksum` }}",
+      "iso_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/debian-{{user `debian_version`}}-amd64-netinst.iso",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
@@ -47,8 +49,11 @@
     {
       "type": "vagrant",
       "compression_level": "9",
-      "output": "debian-{{user `debian_version`}}-amd64_{{.Provider}}.box"
+      "keep_input_artifact": true,
+      "output": "debian-{{user `debian_version`}}-amd64_{{.Provider}}.box",
+      "only": ["virtualbox-iso"]
     }
+
   ],
   "provisioners": [
     {
@@ -57,12 +62,14 @@
       "scripts": [
         "scripts/update.sh",
         "scripts/sshd.sh",
+        "scripts/networking.sh",
         "scripts/sudoers.sh",
         "scripts/vagrant.sh",
-        "scripts/networking.sh",
         "scripts/vbaddguest.sh",
+        "scripts/provision.sh",
         "scripts/cleanup.sh"
-      ]
+      ],
+      "only": ["virtualbox-iso"]
     }
   ]
 }

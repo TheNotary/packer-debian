@@ -1,6 +1,7 @@
 {
     "variables": {
-        "debian_version": "8.6.0"
+        "debian_version": "8.6.0",
+				"iso_checksum": "6c3b53d2a33e34644153683f4492a7773340812c540eb3c5fdeee61e0c8dbafb2f9d634db0d2518b44fbf16770ec15f80561b49c280e27984e887ac71bfb3c3a"
     },
   "builders": [
     {
@@ -27,8 +28,9 @@
       "guest_os_type": "Debian_64",
       "headless": true,
       "http_directory": "http",
-      "iso_checksum_type": "none",
-      "iso_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/debian-{{user `debian_version`}}-amd64-netinst.iso",
+      "iso_checksum_type": "sha512",
+			"iso_checksum": "{{ user `iso_checksum` }}",
+      "iso_url": "http://cdimage.debian.org/cdimage/archive/{{user `debian_version`}}/amd64/iso-cd/debian-{{user `debian_version`}}-amd64-netinst.iso",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
@@ -50,12 +52,6 @@
       "keep_input_artifact": true,
       "output": "debian-{{user `debian_version`}}-amd64_{{.Provider}}.box",
       "only": ["virtualbox-iso"]
-    },
-    {
-      "type": "virtualbox-to-hyperv",
-      "keep_input_artifact": true,
-      "output": "debian-{{user `debian_version`}}-amd64_{{.Provider}}_hyperv.box",
-      "only": ["virtualbox-iso"]
     }
 
   ],
@@ -70,7 +66,7 @@
         "scripts/sudoers.sh",
         "scripts/vagrant.sh",
         "scripts/vbaddguest.sh",
-        "scripts/hyperv.sh",
+        "scripts/provision.sh",
         "scripts/cleanup.sh"
       ],
       "only": ["virtualbox-iso"]
